@@ -1,0 +1,267 @@
+.\" Copyright (c) 2016, Carsten Kunze
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions are met:
+.\"
+.\" 1. Redistributions of source code must retain the above copyright notice,
+.\"    this list of conditions and the following disclaimer.
+.\"
+.\" 2. Redistributions in binary form must reproduce the above copyright notice,
+.\"    this list of conditions and the following disclaimer in the documentation
+.\"    and/or other materials provided with the distribution.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+.\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+.\" LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+.\" CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+.\" SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+.\" INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+.\" CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+.\" ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+.\" POSSIBILITY OF SUCH DAMAGE.
+.ds LIBDIR /usr/local/lib
+.Dd January 20, 2016
+.Dt LIBAVLBST 3
+.Sh NAME
+.Nm avl_add ,
+.Nm avl_del ,
+.Nm avl_del_node ,
+.Nm bst_srch ,
+.Nm bst_add ,
+.Nm bst_del ,
+.Nm bst_del_node
+.Nd AVL binary search tree functions
+.Sh SYNOPSIS
+.Fd "#include <avlbst.h>"
+.Ft int
+.Fo avl_add
+.Fa "struct bst *tree"
+.Fa "union bst_val key"
+.Fa "union bst_val data"
+.Fc
+.Ft int
+.Fo avl_del
+.Fa "struct bst *tree"
+.Fa "union bst_val key"
+.Fc
+.Ft void
+.Fo avl_del_node
+.Fa "struct bst *tree"
+.Fa "struct bst_node *node"
+.Fc
+.Ft int
+.Fo bst_srch
+.Fa "struct bst *tree"
+.Fa "union bst_val key"
+.Fa "struct bst_node **node"
+.Fc
+.Ft int
+.Fo bst_add
+.Fa "struct bst *tree"
+.Fa "union bst_val key"
+.Fa "union bst_val data"
+.Fc
+.Ft int
+.Fo bst_del
+.Fa "struct bst *tree"
+.Fa "union bst_val key"
+.Fc
+.Ft void
+.Fo bst_del_node
+.Fa "struct bst *tree"
+.Fa "struct bst_node *node"
+.Fc
+.Sh DESCRIPTION
+.Nm libavlbst
+is a general purpose AVL tree implementaion.
+Each node can store a
+.Fa key
+and a
+.Fa data
+value:
+.Bd -literal -offset indent
+struct bst_node {
+        union bst_val   key;
+        union bst_val   data;
+        int             bf;
+        struct bst_node *parent, *left, *right;
+};
+.Ed
+.Pp
+For
+.Fa key
+and
+.Fa data
+several types can be choosen:
+.Bd -literal -offset indent
+union bst_val {
+        void     *p;
+        int      i;
+        long     l;
+        uint64_t u64;
+        time_t   t;
+};
+.Ed
+.Pp
+Hence for many uses it may not be necessary to allocate memory for
+.Fa key
+or
+.Fa data .
+All functions operating on the tree use a pointer
+.Fa tree
+to a structure which contains a pointer
+to the top node and the compare function:
+.Bd -literal -offset indent
+struct bst {
+        struct bst_node *root;
+        int (*cmp)(union bst_val, union bst_val);
+};
+.Ed
+.Pp
+.Fn avl_add
+adds nodes to the tree.
+.Fn bst_add
+does the same without rebalancing the tree.
+.Pp
+.Fn avl_del
+deletes nodes from the tree by specifying
+.Fa key
+to identify the node.
+.Fn bst_del
+does the same without rebalancing the tree.
+This is useful if nodes should be deletes while walking through the tree.
+It is
+.Em not allowed
+to use a
+.Fn avl_...
+function after using a
+.Fn bst_...
+function on a tree.
+.Pp
+.Fn avl_del_node
+deletes nodes from the tree by specifying a pointer to the
+.Fa node .
+.Fn bst_del_node
+does the same without rebalancing the tree.
+.Pp
+.Fn bst_srch
+is used to search for an existing
+.Fa key .
+If argument
+.Fa node
+is non-zero a pointer to the node with this key is stored there.
+.Pp
+Programs which link against this library should use a linker command
+similar to
+.Pp
+.Dl LIBDIR = \*[LIBDIR]
+.D1 ...
+.Dl $(CC) $(LDFLAGS) -L$(LIBDIR) -Wl,-rpath,$(LIBDIR) -o $@ $(OBJS) \(rs
+.Dl "    -lavlbst"
+.Sh RETURN VALUES
+.Fn avl_add
+and
+.Fn bst_add
+return 0 on success; otherwise the value
+.Er BST_EEXIST
+if the key already exists.
+.Pp
+.Fn avl_del
+and
+.Fn bst_del
+return 0 on success; otherwise the value
+.Er BST_ENOENT
+if the key oes not exists.
+.Pp
+.Fn bst_srch
+returns 0 if the node had been found;
+otherwise a value different from 0.
+.Sh EXAMPLES
+This simple example outputs the sorted command line arguments
+and then removes each node from the tree:
+.Bd -literal -offset indent
+#include <stdio.h>
+#include <string.h>
+#include <avlbst.h>
+
+static int cmp(union bst_val, union bst_val);
+
+int
+main(int argc, char **argv) {
+    struct bst args = { NULL, cmp };
+    while (argc--)
+        avl_add(&args, (union bst_val)(void *)(*argv++),
+          (union bst_val)(int)0); /* key also used as data */
+    print_sorted_args(args.root);
+    while (args.root)
+        avl_del_node(&args, args.root);
+}
+
+static void
+print_sorted_args(struct bst_node *node) {
+    if (!node)
+        return;
+    print_sorted_args(node->left);
+    printf("%s\(rsn", (char *)node->key.p);
+    print_sorted_args(node->right);
+}
+
+static int
+cmp(union bst_val a, union bst_val b) {
+    return strcmp(a.p, b.p);
+}
+.Ed
+.Ss Non-recursive tree traversal
+The following function can be used to perform a non-recursive tree traversal
+(outputs the same sequence as recursive function
+.Fn print_sorted_args
+in the example above):
+.Bd -literal -offset indent
+void
+proctree(struct bst *tree, void (*proc)(struct bst_node *),
+  void (*del)(struct bst *, struct bst_node *)) {
+    struct bst_node *node, *node2;
+    int go_proc;
+    if (!(node = tree->root))
+        return;
+enter_node:
+    while (node->left)
+        node = node->left;
+proc_data:
+    proc(node);
+    if (node->right) {
+        node = node->right;
+        goto enter_node;
+    }
+go_up:
+    node2 = node;
+    node = node->parent;
+    if (node)
+        go_proc = node2 == node->left;
+    if (del)
+        del(tree, node2); /* Must be non-balancing delete! */
+    if (!node)
+        return;
+    if (go_proc)
+        goto proc_data;
+    goto go_up;
+}
+.Ed
+.Pp
+.Fa proc
+is called for each node found in order of the keys.
+If
+.Fa del
+is not NULL it is called for each visited node for removing it.
+This function must use a non-balancing delete.
+.Sh SEE ALSO
+.Xr avl_add 3 ,
+.Xr avl_del 3 ,
+.Xr avl_del_node 3 ,
+.Xr bst_srch 3 ,
+.Xr bst_add 3 ,
+.Xr bst_del 3 ,
+.Xr bst_del_node 3
