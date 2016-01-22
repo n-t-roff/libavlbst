@@ -7,6 +7,9 @@ so for most applications no memory needs to be allocated (by the user) for stori
 
 Additional information can be found in the [manual page](http://n-t-roff.github.io/bst.3.html)
 and the [installation instructions](https://github.com/n-t-roff/libavlbst/blob/master/INSTALL).
+A usage example of the library functions `avl_add()`, `bst_srch()`, and `bst_del_node()`
+can be found in the [rlcmp](https://github.com/n-t-roff/rlcmp)
+project's file [dir.c](https://github.com/n-t-roff/rlcmp/blob/master/dir.c).
 
 The library can be downloaded as a
 [realease tbz file](https://github.com/n-t-roff/libavlbst/releases/download/v1.0.1/libavlbst.tar.bz2),
