@@ -232,10 +232,11 @@ bst_pdel_node(struct bst *bst, struct bst_node *n, int bal) {
 		return;
 	while (p) {
 		int bf;
-		bf = p->bf += bfc;
-		if (bf == -1 || bf == 1)
-			break;
-		if (bf == -2) {
+		switch(p->bf += bfc) {
+		case -1:
+		case  1:
+			return;
+		case -2:
 			if ((bf = (n = p->right)->bf) != 1) {
 				if (!(t = n->parent = p->parent))
 					bst->root = n;
@@ -252,7 +253,7 @@ bst_pdel_node(struct bst *bst, struct bst_node *n, int bal) {
 				} else {
 					n->bf = 1;
 					p->bf = -1;
-					break;
+					return;
 				}
 				p = n;
 			} else {
@@ -283,7 +284,8 @@ bst_pdel_node(struct bst *bst, struct bst_node *n, int bal) {
 				x->bf = 0;
 				p = x;
 			}
-		} else if (bf == 2) {
+			break;
+		case 2:
 			if ((bf = (n = p->left)->bf) != -1) {
 				if (!(t = n->parent = p->parent))
 					bst->root = n;
@@ -300,7 +302,7 @@ bst_pdel_node(struct bst *bst, struct bst_node *n, int bal) {
 				} else {
 					n->bf = -1;
 					p->bf = 1;
-					break;
+					return;
 				}
 				p = n;
 			} else {
