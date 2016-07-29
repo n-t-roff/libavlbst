@@ -9,12 +9,15 @@ LIBVV=		$(LIBV).0.1
 
 OBJS=		bst.o
 
-_CFLAGS=	$(CFLAGS) $(_CFLAGS_) -Wall
-#_CFLAGS=	-g -Og
-_LDFLAGS=	-s
+DBG=		#-g -O0 -fno-omit-frame-pointer -fno-optimize-sibling-calls \
+		-fsanitize=undefined \
+		-fsanitize=integer \
+		#-fsanitize=address
+_CFLAGS=	$(CFLAGS) $(DBG) -Wall -Wextra
+_LDFLAGS=	$(LDFLAGS) $(DBG) -s
 
 $(LIBVV):	$(OBJS)
-		$(CC) $(LDFLAGS) $(_LDFLAGS) -shared -Wl,-soname,${LIBV} \
+		$(CC) $(_LDFLAGS) -shared -Wl,-soname,${LIBV} \
 		    -o $@ $(OBJS)
 		rm -f ${LIB} ${LIBV}
 		ln -s ${LIBVV} ${LIBV}
@@ -52,9 +55,9 @@ uninstall:
 		done
 
 clean:
-		rm -f $(OBJS) $(LIB)* Makefile
+		rm -f $(OBJS) $(LIB)*
 
 .c.o:
 		${CC} -fPIC $(_CFLAGS) ${CPPFLAGS} -c $<
 
-bst.o:		bst.h Makefile
+bst.o:		bst.h

@@ -10,9 +10,8 @@
 
 2. Installation
 
-  The library is build with the commands:
+  The library is build with the command
 
-     $ ./configure
      $ make
 
   Installation usually has to be done as root:
@@ -26,14 +25,6 @@
 
 3. Deinstallation
 
-  At first a makefile needs to be generated with
-
-     $ ./configure
-
   Deinstallation is done as root with
 
      # make uninstall
-
-  Then the generated makefile is removed with
-
-     $ make clean
