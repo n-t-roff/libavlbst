@@ -41,10 +41,14 @@ static int srch_node(struct bst *, union bst_val, struct bst_node **);
  *   BST_EEXIST  Key already exists */
 
 int
-bst_padd(struct bst *bst, union bst_val key, union bst_val data, int bal) {
-	struct bst_node *n, *c, *gc, *t;
-	int i;
-	if ((i = srch_node(bst, key, &n)) == NODE_FOUND) {
+bst_padd(struct bst *bst, union bst_val key, union bst_val data, int bal,
+    int i, struct bst_node *n) {
+	struct bst_node *c, *gc, *t;
+
+	if (!n)
+		i = srch_node(bst, key, &n);
+
+	if (i == NODE_FOUND) {
 		fprintf(stderr, "bst_add: Key does already exist\n");
 		return BST_EEXIST;
 	}
@@ -344,8 +348,12 @@ bst_srch(struct bst *bst, union bst_val key, struct bst_node **node)
 {
 	struct bst_node *n;
 	int retval;
-	if ((retval = srch_node(bst, key, &n)) == NODE_FOUND && node)
+
+	retval = srch_node(bst, key, &n);
+
+	if (node)
 		*node = n;
+
 	return retval;
 }
 

@@ -1,20 +1,21 @@
-INCDIR=		/usr/local/include
-LIBDIR=		/usr/local/lib
-MANDIR=		/usr/local/share/man
+PREFIX=		/usr/local
+INCDIR=		$(PREFIX)/include
+LIBDIR=		$(PREFIX)/lib
+MANDIR=		$(PREFIX)/share/man
 NAME=		avlbst
 
 LIB=		lib$(NAME).so
-LIBV=		$(LIB).1
-LIBVV=		$(LIBV).0.1
+LIBV=		$(LIB).2
+LIBVV=		$(LIBV).0.0
 
 OBJS=		bst.o
 
-DBG=		#-g -O0 -fno-omit-frame-pointer -fno-optimize-sibling-calls \
-		-fsanitize=undefined \
-		-fsanitize=integer \
-		#-fsanitize=address
-_CFLAGS=	$(CFLAGS) $(DBG) -Wall -Wextra
-_LDFLAGS=	$(LDFLAGS) $(DBG) -s
+MANS=		avl_add avl_add_at avl_del avl_del_node bst_srch bst_add \
+		bst_add_at bst_del bst_del_node
+
+_CFLAGS=	$(CFLAGS) $(__CDBG) $(__SAN) -Wall -Wextra
+_LDFLAGS=	$(LDFLAGS) $(__SAN) \
+		-s
 
 $(LIBVV):	$(OBJS)
 		$(CC) $(_LDFLAGS) -shared -Wl,-soname,${LIBV} \
@@ -36,8 +37,7 @@ install:
 		sed 's"ds LIBDIR .*$$"ds LIBDIR $(LIBDIR)"' bst.3 \
 		    > $(MANDIR)/man3/lib$(NAME).3
 		cd $(MANDIR)/man3; \
-		for i in avl_add avl_del avl_del_node bst_srch bst_add \
-		    bst_del bst_del_node; do \
+		for i in $(MANS); do \
 			[ -e $$i.3 ] || ln -s lib$(NAME).3 $$i.3; \
 		done
 
@@ -47,8 +47,7 @@ uninstall:
 			rm -f $(LIBDIR)/$$i; \
 		done
 		rm -f $(MANDIR)/man3/lib$(NAME).3
-		for i in avl_add avl_del avl_del_node bst_srch bst_add \
-		    bst_del bst_del_node; do \
+		for i in $(MANS); do \
 			if [ -h $(MANDIR)/man3/$$i ]; then \
 				rm -f $(MANDIR)/man3/$$i; \
 			fi; \
@@ -56,6 +55,9 @@ uninstall:
 
 clean:
 		rm -f $(OBJS) $(LIB)*
+
+distclean:	clean
+		rm -f Makefile config.log
 
 .c.o:
 		${CC} -fPIC $(_CFLAGS) ${CPPFLAGS} -c $<

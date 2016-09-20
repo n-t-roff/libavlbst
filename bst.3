@@ -43,6 +43,14 @@
 .Fa "union bst_val data"
 .Fc
 .Ft int
+.Fo avl_add_at
+.Fa "struct bst *tree"
+.Fa "union bst_val key"
+.Fa "union bst_val data"
+.Fa "int branch"
+.Fa "struct bst_node *node"
+.Fc
+.Ft int
 .Fo avl_del
 .Fa "struct bst *tree"
 .Fa "union bst_val key"
@@ -63,6 +71,14 @@
 .Fa "struct bst *tree"
 .Fa "union bst_val key"
 .Fa "union bst_val data"
+.Fc
+.Ft int
+.Fo bst_add_at
+.Fa "struct bst *tree"
+.Fa "union bst_val key"
+.Fa "union bst_val data"
+.Fa "int branch"
+.Fa "struct bst_node *node"
 .Fc
 .Ft int
 .Fo bst_del
@@ -126,6 +142,33 @@ adds nodes to the tree.
 .Fn bst_add
 does the same without rebalancing the tree.
 .Pp
+.Fn avl_add_at
+and
+.Fn bst_add_at
+add a node after a previous unsuccessful run of
+.Fn bst_srch
+without doing a search for the insertion point again
+(and hence saving time).
+This is comparable to the behaviour of
+.Xr tsearch 3 ,
+but the splitting into
+.Fn bst_srch
+and
+.Fn avl_add_at
+has the advantage of preparing the data for adding the
+node (e.g.
+.Xr malloc 3
+and filling the structure) only if it is not already in the tree.
+.Bd -literal -offset indent
+struct bst tree = { NULL, compare };
+int br;
+struct bst_node *n;
+
+if ((br = bst_srch(&tree, (union bst_val)(void *)"foo", &n)))
+	avl_add_at(&tree, (union bst_val)(void *)"foo",
+	    (union bst_val)(int)0, br, n);
+.Ed
+.Pp
 .Fn avl_del
 deletes nodes from the tree by specifying
 .Fa key
@@ -187,7 +230,9 @@ and then removes each node from the tree:
 #include <string.h>
 #include <avlbst.h>
 
-static int cmp(union bst_val, union bst_val);
+static int compare(union bst_val, union bst_val);
+
+struct bst args = { NULL, compare };
 
 int
 main(int argc, char **argv) {
@@ -210,8 +255,8 @@ print_sorted_args(struct bst_node *node) {
 }
 
 static int
-cmp(union bst_val a, union bst_val b) {
-    return strcmp(a.p, b.p);
+compare(union bst_val a, union bst_val b) {
+    return strcmp((char *)a.p, (char *)b.p);
 }
 .Ed
 .Ss Non-recursive tree traversal

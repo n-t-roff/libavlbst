@@ -25,6 +25,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef __LIBAVLBST__BST_H
+#define __LIBAVLBST__BST_H
+
 #include <time.h>
 #include <stdint.h>
 
@@ -51,18 +54,23 @@ struct bst {
 	int (*cmp)(union bst_val, union bst_val);
 };
 
-int bst_padd(struct bst *, union bst_val, union bst_val, int);
+int bst_padd(struct bst *, union bst_val, union bst_val, int,
+    int, struct bst_node *);
 int bst_srch(struct bst *, union bst_val, struct bst_node **);
 int bst_pdel(struct bst *, union bst_val, int);
 void bst_pdel_node(struct bst *, struct bst_node *, int);
 
-#define avl_add(t, k, v)   bst_padd(t, k, v, 1)
-#define avl_del(t, k)      bst_pdel(t, k, 1)
-#define avl_del_node(t, n) bst_pdel_node(t, n, 1)
+#define avl_add(t, k, v)          bst_padd(t, k, v, 1, 0, NULL)
+#define avl_add_at(t, k, v, i, n) bst_padd(t, k, v, 1, i, n)
+#define avl_del(t, k)             bst_pdel(t, k, 1)
+#define avl_del_node(t, n)        bst_pdel_node(t, n, 1)
 
 /* The following functions perform non-balancing BST operations. These are
  * useful when deleting (visited) notes while walking through the tree. */
 
-#define bst_add(t, k, v)   bst_padd(t, k, v, 0)
-#define bst_del(t, k)      bst_pdel(t, k, 0)
-#define bst_del_node(t, n) bst_pdel_node(t, n, 0)
+#define bst_add(t, k, v)          bst_padd(t, k, v, 0, 0, NULL)
+#define bst_add_at(t, k, v, i, n) bst_padd(t, k, v, 0, i, n)
+#define bst_del(t, k)             bst_pdel(t, k, 0)
+#define bst_del_node(t, n)        bst_pdel_node(t, n, 0)
+
+#endif /* __LIBAVLBST__BST_H */
