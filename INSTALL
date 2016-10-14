@@ -10,21 +10,30 @@
 
 2. Installation
 
-  The library is build with the command
+  The library is build with the commands:
 
+     $ ./configure
      $ make
 
   Installation usually has to be done as root:
 
      # make install
 
-  Generated files are removed with:
+  Generated files are removed with
 
-     $ make clean
+     $ make distclean
 
 
 3. Deinstallation
 
+  At first a makefile needs to be generated with
+
+     $ ./configure
+
   Deinstallation is done as root with
 
      # make uninstall
+
+  Then the generated makefile is removed with
+
+     $ make distclean

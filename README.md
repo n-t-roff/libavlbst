@@ -15,13 +15,11 @@ A usage example of the library functions `avl_add()`, `bst_srch()`, and `bst_del
 can be found in the [rlcmp](https://github.com/n-t-roff/rlcmp)
 project's file [dir.c](https://github.com/n-t-roff/rlcmp/blob/master/dir.c).
 
-The library can be downloaded as a
-[realease tbz file](https://github.com/n-t-roff/libavlbst/releases/download/v1.0.1/libavlbst.tar.bz2),
-with the [Download ZIP](https://github.com/n-t-roff/libavlbst/archive/master.zip) button or with
+The library can be downloaded with
 ```
 git clone https://github.com/n-t-roff/libavlbst.git
 ```
-In the latter case the archive is updated with
+and updated with
 ```
 git pull
 ```
