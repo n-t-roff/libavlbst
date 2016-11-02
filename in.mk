@@ -13,8 +13,8 @@ OBJS=		bst.o
 MANS=		avl_add avl_add_at avl_del avl_del_node bst_srch bst_add \
 		bst_add_at bst_del bst_del_node
 
-_CFLAGS=	$(CFLAGS) $(__CDBG) $(__SAN) -Wall -Wextra
-_LDFLAGS=	$(LDFLAGS) $(__SAN) \
+_CFLAGS=	$(CFLAGS) $(__CDBG) $(__CLDBG) -Wall -Wextra
+_LDFLAGS=	$(LDFLAGS) $(__CLDBG) \
 		-s
 
 $(LIBVV):	$(OBJS)

@@ -23,7 +23,7 @@
 .\" ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 .\" POSSIBILITY OF SUCH DAMAGE.
 .ds LIBDIR /usr/local/lib
-.Dd September 20, 2016
+.Dd November 2, 2016
 .Dt LIBAVLBST 3
 .Sh NAME
 .Nm avl_add ,
@@ -237,10 +237,13 @@ struct bst args = { NULL, compare };
 int
 main(int argc, char **argv) {
     struct bst args = { NULL, cmp };
+
     while (argc--)
         avl_add(&args, (union bst_val)(void *)(*argv++),
           (union bst_val)(int)0); /* key also used as data */
+
     print_sorted_args(args.root);
+
     while (args.root)
         avl_del_node(&args, args.root);
 }
@@ -249,6 +252,7 @@ static void
 print_sorted_args(struct bst_node *node) {
     if (!node)
         return;
+
     print_sorted_args(node->left);
     printf("%s\(rsn", (char *)node->key.p);
     print_sorted_args(node->right);
@@ -270,28 +274,41 @@ proctree(struct bst *tree, void (*proc)(struct bst_node *),
   void (*del)(struct bst *, struct bst_node *)) {
     struct bst_node *node, *node2;
     int go_proc;
+
     if (!(node = tree->root))
         return;
+
 enter_node:
     while (node->left)
         node = node->left;
+
 proc_data:
     proc(node);
+
     if (node->right) {
         node = node->right;
         goto enter_node;
     }
+
 go_up:
     node2 = node;
     node = node->parent;
+
     if (node)
         go_proc = node2 == node->left;
+
     if (del)
         del(tree, node2); /* Must be non-balancing delete! */
+
     if (!node)
+        if (del)
+            tree->root = NULL;
+
         return;
+
     if (go_proc)
         goto proc_data;
+
     goto go_up;
 }
 .Ed
