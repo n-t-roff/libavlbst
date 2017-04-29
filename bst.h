@@ -36,6 +36,9 @@
 
 union bst_val {
 	void *p;
+	const void *cp;
+	intptr_t ip;
+	uintptr_t up;
 	int i;
 	long l;
 	uint64_t u64;

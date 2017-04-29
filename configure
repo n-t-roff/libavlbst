@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (c) 2016, Carsten Kunze <carsten.kunze@arcor.de>
+# Copyright (c) 2016-2017, Carsten Kunze <carsten.kunze@arcor.de>
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -89,8 +89,10 @@ gen_mk () {
 	[ -n "$LIB_CURSES" ] && echo "LIB_CURSES=$LIB_CURSES" >> $OUTMK
 	[ -n "$LIB_AVLBST" ] && echo "LIB_AVLBST=$LIB_AVLBST" >> $OUTMK
 	[ -n "$LIB_LEX" ] && echo "LIB_LEX=$LIB_LEX" >> $OUTMK
-	[ -n "$__CDBG" ] && echo "__CDBG=$__CDBG" >> $OUTMK
-	[ -n "$__CLDBG" ] && echo "__CLDBG=$__CLDBG" >> $OUTMK
+	[ -n "$__CDBG"    ] && echo "__CDBG=$__CDBG" >> $OUTMK
+	[ -n "$__CXXDBG"  ] && echo "__CXXDBG=$__CXXDBG" >> $OUTMK
+	[ -n "$__CLDBG"   ] && echo "__CLDBG=$__CLDBG" >> $OUTMK
+	[ -n "$__CLXXDBG" ] && echo "__CLXXDBG=$__CLXXDBG" >> $OUTMK
 	cat $INMK >> $OUTMK || exit 1
 }
 check_make () {
@@ -117,6 +119,65 @@ all:
 EOT
 	bmake -f $TMPMK >> $LOG 2>&1
 	test_result && MAKE=bmake
+}
+check_Sanitizer () {
+	check_for "CC Sanitizer"
+
+	__CDBG="-Wmissing-prototypes"
+	__CLDBG=
+	__CXXDBG="-g -O0 -fno-omit-frame-pointer -fno-optimize-sibling-calls"
+	__CXXDBG="$__CXXDBG -Wall"
+	__CXXDBG="$__CXXDBG -Wextra"
+	__CXXDBG="$__CXXDBG -Wsign-compare"
+	__CXXDBG="$__CXXDBG -Wcast-align"
+	__CXXDBG="$__CXXDBG -Wcast-qual"
+	__CXXDBG="$__CXXDBG -Wunused-parameter"
+	__CXXDBG="$__CXXDBG -Wunused-function"
+	__CXXDBG="$__CXXDBG -Wshadow"
+	__CXXDBG="$__CXXDBG -Wmissing-prototypes"
+	__CXXDBG="$__CXXDBG -Wstrict-prototypes"
+	__CXXDBG="$__CXXDBG -Wwrite-strings"
+	__CLXXDBG="-fno-common -fsanitize=address"
+
+	[ -n "$CC" ] || CC=cc
+	VER=`$CC --version`
+
+	if echo $VER | grep -iq gcc || echo $VER | \
+	    grep -iq 'Free Software Foundation'; then
+		[ -z "$SFLAG" ] && printf "(gcc) "
+		#__CLDBG="$__CXXDBG -fprofile-arcs -ftest-coverage"
+		__CLDBG="$__CLDBG -fsanitize=undefined"
+		__CLDBG="$__CLDBG -fsanitize=float-divide-by-zero"
+		__CLDBG="$__CLDBG -fsanitize=float-cast-overflow"
+	elif echo $VER | grep -q clang; then
+		[ -z "$SFLAG" ] && printf "(clang) "
+		__CXXDBG="$__CXXDBG -Wincompatible-pointer-types-discards-qualifiers"
+		__CXXDBG="$__CXXDBG -Wmissing-variable-declarations"
+		__CLXXDBG="$__CLXXDBG -fsanitize=undefined"
+		__CLXXDBG="$__CLXXDBG -fsanitize=unsigned-integer-overflow"
+	else
+		[ -z "$SFLAG" ] && echo "Unknown compiler"
+		return
+	fi
+
+	__CDBG="$__CXXDBG $__CDBG"
+	__CLDBG="$__CLXXDBG $__CLDBG"
+	cat <<EOT >$TMPC
+int
+main() {
+	return 0;
+}
+EOT
+	gen_mk
+	cat <<EOT >>$OUTMK
+$TMPNAM: ${TMPNAM}.o
+	\$(CC) \$(__CDBG) \$(__CLDBG) -o \$@ ${TMPNAM}.o
+EOT
+	compile
+	test_result || {
+		__CLDBG=
+		__CLXXDBG=
+	}
 }
 	[ ! -s compat.h ] && rm compat.h
 OUTMK=Makefile

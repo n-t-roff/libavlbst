@@ -114,11 +114,14 @@ and
 several types can be choosen:
 .Bd -literal -offset indent
 union bst_val {
-        void     *p;
-        int      i;
-        long     l;
-        uint64_t u64;
-        time_t   t;
+        void       *p;
+        const void *cp;
+        intptr_t   ip;
+        uintptr_t  up;
+        int        i;
+        long       l;
+        uint64_t   u64;
+        time_t     t;
 };
 .Ed
 .Pp
