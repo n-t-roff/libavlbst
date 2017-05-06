@@ -3,7 +3,7 @@
 Tools that need an easy and fast way to store, search and sort data
 can link against this shared library.
 For each search tree entry a key and a data field is provided.
-For both files several data types can be used:
+For both fields several data types can be used:
 `void *`,
 `const void *`,
 `intptr_t`,
