@@ -25,11 +25,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __LIBAVLBST__BST_H
-#define __LIBAVLBST__BST_H
+#ifndef LIBAVLBST__BST_H_
+#define LIBAVLBST__BST_H_
 
 #include <time.h>
 #include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define BST_EEXIST -2
 #define BST_ENOENT -4
@@ -76,4 +80,8 @@ void bst_pdel_node(struct bst *, struct bst_node *, int);
 #define bst_del(t, k)             bst_pdel(t, k, 0)
 #define bst_del_node(t, n)        bst_pdel_node(t, n, 0)
 
-#endif /* __LIBAVLBST__BST_H */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* LIBAVLBST__BST_H_ */
