@@ -37,6 +37,7 @@ extern "C" {
 
 #define BST_EEXIST -2
 #define BST_ENOENT -4
+#define BST_ENOMEM -5
 
 union bst_val {
 	void *p;

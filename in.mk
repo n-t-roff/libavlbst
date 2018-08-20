@@ -6,7 +6,7 @@ MANDIR=		$(PREFIX)/share/man
 
 LIB=		lib$(NAME).so
 LIBV=		$(LIB).2
-LIBVV=		$(LIBV).1.0
+LIBVV=		$(LIBV).1.1
 
 OBJS=		bst.o
 

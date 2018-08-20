@@ -49,10 +49,13 @@ bst_padd(struct bst *bst, union bst_val key, union bst_val data, int bal,
 		i = srch_node(bst, key, &n);
 
 	if (i == NODE_FOUND) {
-		fprintf(stderr, "bst_add: Key does already exist\n");
 		return BST_EEXIST;
 	}
-	c = malloc(sizeof(struct bst_node));
+
+	if (!(c = malloc(sizeof(struct bst_node)))) {
+		return BST_ENOMEM;
+	}
+
 	c->left = c->right = NULL;
 	c->bf = 0;
 	switch (i) {
