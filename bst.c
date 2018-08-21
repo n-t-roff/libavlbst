@@ -52,7 +52,7 @@ bst_padd(struct bst *bst, union bst_val key, union bst_val data, int bal,
 		return BST_EEXIST;
 	}
 
-	if (!(c = malloc(sizeof(struct bst_node)))) {
+	if (!(c = malloc(sizeof(*c)))) {
 		return BST_ENOMEM;
 	}
 
