@@ -228,7 +228,10 @@ if there is not sufficient memory for allocating a new node.
 .Fn avl_del
 and
 .Fn bst_del
-return 0 on success and
+return 0 on success,
+.Er BST_EINVAL
+on error (NULL pointer argument)
+and
 .Er BST_ENOENT
 if the key does not exists.
 .

@@ -176,18 +176,15 @@ bst_padd(struct bst *bst, union bst_val key, union bst_val data, int bal,
 	return 0;
 }
 
-/* Delete node
- *
- * Returns:
- *   0           No error
- *   BST_ENOENT  Key not found */
-
 int
 bst_pdel(struct bst *bst, union bst_val key, int bal) {
 	struct bst_node *n;
-	if (srch_node(bst, key, &n) != NODE_FOUND) {
+	int i;
+	i = srch_node(bst, key, &n);
+	if (i < 0)
+		return i;
+	if (i != NODE_FOUND)
 		return BST_ENOENT;
-	}
 	bst_pdel_node(bst, n, bal);
 	return 0;
 }

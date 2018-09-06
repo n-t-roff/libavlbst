@@ -72,6 +72,14 @@ struct bst {
 int bst_padd(struct bst *, union bst_val, union bst_val, int,
     int, struct bst_node *);
 int bst_srch(struct bst *, union bst_val, struct bst_node **);
+/*
+ * Delete node
+ *
+ * Returns:
+ *   0           No error
+ *   BST_ENOENT  Key not found
+ *   BST_EINVAL  NULL pointer argument
+ */
 int bst_pdel(struct bst *, union bst_val, int);
 void bst_pdel_node(struct bst *, struct bst_node *, int);
 
