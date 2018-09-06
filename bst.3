@@ -23,7 +23,7 @@
 .\" ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 .\" POSSIBILITY OF SUCH DAMAGE.
 .ds LIBDIR /usr/local/lib
-.Dd August 20, 2018
+.Dd September 6, 2018
 .Dt LIBAVLBST 3
 .Sh NAME
 .Nm avl_add ,
@@ -211,7 +211,7 @@ similar to
 .Fn avl_add
 and
 .Fn bst_add
-return 0 on success; otherwise the value
+return 0 on success, otherwise the value
 .Er BST_EEXIST
 if the key already exists and
 .Er BST_ENOMEM
@@ -220,12 +220,14 @@ if there is not sufficient memory for allocating a new node.
 .Fn avl_del
 and
 .Fn bst_del
-return 0 on success; otherwise the value
+return 0 on success, otherwise the value
 .Er BST_ENOENT
 if the key does not exists.
 .Pp
 .Fn bst_srch
-returns 0 if the node had been found;
+returns 0 if the node had been found,
+.Er BST_EINVAL
+on error (NULL pointer argument),
 otherwise a value different from 0.
 .Sh EXAMPLES
 This simple example outputs the sorted command line arguments

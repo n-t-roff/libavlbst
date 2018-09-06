@@ -34,6 +34,14 @@
 #define INSERT_RIGHT 2
 #define TREE_EMPTY   3
 
+/*
+ * Returns:
+ *   NODE_FOUND    Found in node
+ *   INSERT_LEFT   Not found, insert to node->left
+ *   INSERT_RIGHT  Not found, insert to node->right
+ *   TREE_EMPTY    Tree empty (node = NULL)
+ *   BST_EINVAL    NULL pointer argument
+ */
 static int srch_node(struct bst *, union bst_val, struct bst_node **);
 
 /* Returns:
@@ -360,17 +368,14 @@ bst_srch(struct bst *bst, union bst_val key, struct bst_node **node)
 	return retval;
 }
 
-/* Returns:
- *   NODE_FOUND    Found in node
- *   INSERT_LEFT   Not found, insert to node->left
- *   INSERT_RIGHT  Not found, insert to node->right
- *   TREE_EMPTY    Tree empty (node = NULL) */
-
 static int
 srch_node(struct bst *bst, union bst_val key, struct bst_node **node) {
-	struct bst_node *n = bst->root, *c;
+	struct bst_node *n = bst ? bst->root : NULL; /* `bst` must not be NULL! */
+	struct bst_node *c;
 	int retval = TREE_EMPTY;
 	int d;
+	if (!bst || !node)
+		return BST_EINVAL;
 	while (n) {
 		d = bst->cmp(key, n->key);
 		if (d < 0) {
