@@ -207,29 +207,43 @@ similar to
 .D1 ...
 .Dl $(CC) $(LDFLAGS) -L$(LIBDIR) -Wl,-rpath,$(LIBDIR) -o $@ $(OBJS) \(rs
 .Dl "    -lavlbst"
+.
+.
 .Sh RETURN VALUES
+.
+.
 .Fn avl_add
 and
 .Fn bst_add
-return 0 on success, otherwise the value
+return 0 on success,
+.Er BST_EINVAL
+on error (NULL pointer argument),
 .Er BST_EEXIST
 if the key already exists and
 .Er BST_ENOMEM
 if there is not sufficient memory for allocating a new node.
+.
 .Pp
+.
 .Fn avl_del
 and
 .Fn bst_del
-return 0 on success, otherwise the value
+return 0 on success and
 .Er BST_ENOENT
 if the key does not exists.
+.
 .Pp
+.
 .Fn bst_srch
 returns 0 if the node had been found,
 .Er BST_EINVAL
-on error (NULL pointer argument),
-otherwise a value different from 0.
+on error (NULL pointer argument) and
+a value greater than 0 otherwise.
+.
+.
 .Sh EXAMPLES
+.
+.
 This simple example outputs the sorted command line arguments
 and then removes each node from the tree:
 .Bd -literal -offset indent

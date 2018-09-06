@@ -63,6 +63,12 @@ struct bst {
 	int (*cmp)(union bst_val, union bst_val);
 };
 
+/*
+ * Returns:
+ *   0           No error
+ *   BST_EEXIST  Key already exists
+ *   BST_EINVAL  NULL pointer argument
+ */
 int bst_padd(struct bst *, union bst_val, union bst_val, int,
     int, struct bst_node *);
 int bst_srch(struct bst *, union bst_val, struct bst_node **);

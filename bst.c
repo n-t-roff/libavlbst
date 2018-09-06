@@ -44,15 +44,13 @@
  */
 static int srch_node(struct bst *, union bst_val, struct bst_node **);
 
-/* Returns:
- *   0           No error
- *   BST_EEXIST  Key already exists */
-
 int
 bst_padd(struct bst *bst, union bst_val key, union bst_val data, int bal,
     int i, struct bst_node *n) {
 	struct bst_node *c, *gc, *t;
 
+	if (!bst)
+		return BST_EINVAL;
 	if (!n)
 		i = srch_node(bst, key, &n);
 
