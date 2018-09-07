@@ -1,4 +1,4 @@
-.\" Copyright (c) 2016, Carsten Kunze
+.\" Copyright (c) 2016-2018, Carsten Kunze
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -23,7 +23,7 @@
 .\" ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 .\" POSSIBILITY OF SUCH DAMAGE.
 .ds LIBDIR /usr/local/lib
-.Dd September 6, 2018
+.Dd September 7, 2018
 .Dt LIBAVLBST 3
 .Sh NAME
 .Nm avl_add ,
@@ -55,7 +55,7 @@
 .Fa "struct bst *tree"
 .Fa "union bst_val key"
 .Fc
-.Ft void
+.Ft int
 .Fo avl_del_node
 .Fa "struct bst *tree"
 .Fa "struct bst_node *node"
@@ -85,7 +85,7 @@
 .Fa "struct bst *tree"
 .Fa "union bst_val key"
 .Fc
-.Ft void
+.Ft int
 .Fo bst_del_node
 .Fa "struct bst *tree"
 .Fa "struct bst_node *node"
@@ -234,6 +234,15 @@ on error (NULL pointer argument)
 and
 .Er BST_ENOENT
 if the key does not exists.
+.
+.Pp
+.
+.Fn avl_del_node
+and
+.Fn bst_del_node
+return 0 on success and
+.Er BST_EINVAL
+on error (NULL pointer argument).
 .
 .Pp
 .

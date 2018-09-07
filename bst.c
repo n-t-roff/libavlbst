@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016, Carsten Kunze
+ * Copyright (c) 2015-2018, Carsten Kunze
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -185,14 +185,16 @@ bst_pdel(struct bst *bst, union bst_val key, int bal) {
 		return i;
 	if (i != NODE_FOUND)
 		return BST_ENOENT;
-	bst_pdel_node(bst, n, bal);
-	return 0;
+	return bst_pdel_node(bst, n, bal);
 }
 
-void
+int
 bst_pdel_node(struct bst *bst, struct bst_node *n, int bal) {
 	struct bst_node *p, **pp, *t, *x;
 	int bfc;
+	int rv = 0;
+	if (!bst || !n)
+		return BST_EINVAL;
 	if (!(t = n->parent)) {
 		p = NULL;
 		pp = &bst->root;
@@ -234,13 +236,13 @@ bst_pdel_node(struct bst *bst, struct bst_node *n, int bal) {
 	}
 	free(n);
 	if (!bal)
-		return;
+		return rv;
 	while (p) {
 		int bf;
 		switch(p->bf += bfc) {
 		case -1:
 		case  1:
-			return;
+			return rv;
 		case -2:
 			if ((bf = (n = p->right)->bf) != 1) {
 				if (!(t = n->parent = p->parent))
@@ -258,7 +260,7 @@ bst_pdel_node(struct bst *bst, struct bst_node *n, int bal) {
 				} else {
 					n->bf = 1;
 					p->bf = -1;
-					return;
+					return rv;
 				}
 				p = n;
 			} else {
@@ -307,7 +309,7 @@ bst_pdel_node(struct bst *bst, struct bst_node *n, int bal) {
 				} else {
 					n->bf = -1;
 					p->bf = 1;
-					return;
+					return rv;
 				}
 				p = n;
 			} else {
@@ -347,6 +349,7 @@ bst_pdel_node(struct bst *bst, struct bst_node *n, int bal) {
 				bfc = 1;
 		}
 	}
+	return rv;
 }
 
 int /* 0: found, !0: not found */

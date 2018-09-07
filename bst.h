@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016, Carsten Kunze
+ * Copyright (c) 2015-2018, Carsten Kunze
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,7 +81,14 @@ int bst_srch(struct bst *, union bst_val, struct bst_node **);
  *   BST_EINVAL  NULL pointer argument
  */
 int bst_pdel(struct bst *, union bst_val, int);
-void bst_pdel_node(struct bst *, struct bst_node *, int);
+/*
+ * Delete node
+ *
+ * Returns:
+ *   0           No error
+ *   BST_EINVAL  NULL pointer argument
+ */
+int bst_pdel_node(struct bst *, struct bst_node *, int);
 
 #define avl_add(t, k, v)          bst_padd(t, k, v, 1, 0, NULL)
 #define avl_add_at(t, k, v, i, n) bst_padd(t, k, v, 1, i, n)
